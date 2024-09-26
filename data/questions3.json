@@ -1,0 +1,52 @@
+[
+    { 
+      "question": "請問「Masadaktu ku vulad.」的中文是？",
+      "options": ["太陽出來了。", "星星出來了。", "月亮下去了。", "月亮出來了。"],
+      "answer": "月亮出來了。" 
+    },  
+    { 
+     "question": "請問「Talalutuk ci ama a mi’adup.」的中文是？",
+      "options": ["媽媽上山打獵。", "爸爸上山打獵。", "爸爸下海捕魚。", "媽媽下海打獵。"],
+      "answer": "爸爸上山打獵。" 
+    },
+    { 
+      "question": "請問「Lalima ku tamedaw nu luma’ nu niyam.」的中文是？",
+      "options": ["我們家有五個人。", "我們家有三個人。", "我們家有五隻貓。", "我們班有五個人。"],
+      "answer": "我們家有五個人。" 
+    },
+    { 
+      "question": "請問「Pinatu ku miheca’an nu sava nu misu?」的中文是？",
+      "options": ["你的妹妹多高了？", "你的妹妹幾歲了？", "你的妹妹幾年級了？", "你的哥哥幾歲了？"],
+      "answer": "你的妹妹幾歲了？" 
+    },
+    { 
+      "question": "請問「Mahakulung kita a mimelaw tu vu’is.」的中文是？",
+      "options": ["我們一起去看星星。", "我們一起去看海洋。", "我們一起去看電影。", "我們一起去看日出。"],
+      "answer": "我們一起去看星星。" 
+    },
+    { 
+      "question": "請問「Taluma’tu ci ama aci ina.」的中文是？",
+      "options": ["哥哥和姊姊出門了。", "爸爸和媽媽回家了。", "爸爸和媽媽去公園了。", "爸爸和媽媽出門了。"],
+      "answer": "爸爸和媽媽回家了。" 
+    },
+    { 
+      "question": "請問「Iniyan ku sa’ung nu maku.」的中文是？",
+      "options": ["我的雨鞋是這一雙。", "我的筆記本是這一本。", "我的書包是這一個。", "我的雨傘是這一把。"],
+      "answer": "我的雨傘是這一把。" 
+    },
+    { 
+      "question": "請問「Mihulul kaku atu vavahiyan a kaka nu maku i luma’.」的中文是？",
+      "options": ["我和姊姊在餐廳裡吃晚餐。", "姊姊和我在學校裡上課。", "姊姊和我在家裡玩。", "我和姊姊一起去公園散步。"],
+      "answer": "姊姊和我在家裡玩。" 
+    },
+    { 
+      "question": "請問「Salipahak sa’an ku heni i kasivaliyan.」的中文是？",
+      "options": ["風吹來時我們很高興。", "雨下來時他們很高興。", "風吹來時他們很悲傷。", "風吹來時他們很高興。"],
+      "answer": "風吹來時他們很高興。" 
+    },
+    { 
+      "question": "請問「Hay, vangecal a melawan ku talakal ni Adek.」的中文是？",
+      "options": ["確實，星空看起來真神秘。", "是的，彩虹看起來真美麗。", "對啊，煙火看起來真燦爛。", "沒錯，夕陽看起來真壯觀。"],
+      "answer": "是的，彩虹看起來真美麗。" 
+    }
+]

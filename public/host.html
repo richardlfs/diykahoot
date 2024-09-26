@@ -1,0 +1,725 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>自製Kahoot - 老師端</title>
+<!--google字型-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+<!--CSS動畫 animate-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!--google fonts icons-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+	/* 呼吸動畫 */
+	@keyframes zoomInOut {
+		0%, 100% {
+			transform: scale(1);  /* 原始大小 */
+		}
+		50% {
+			transform: scale(1.1);  /* 放大到1.1倍 */
+		}
+	}
+	/* 應用動畫到目標元素 */
+	.zoomText {
+		font-size: 1.1em;
+		animation: zoomInOut 3s infinite;  /* 動畫名稱, 動畫時間, 循環次數 */
+	}
+	.material-symbols-outlined {
+		font-variation-settings:
+		'FILL' 0,
+		'wght' 400,
+		'GRAD' 0,
+		'opsz' 24
+	}
+	.textshadow{
+		text-shadow: 2px 2px 4px #000000;
+	}
+	body {
+		font-family: 'Noto Sans TC', sans-serif;
+		color: rgba(235, 235, 235, 0.95);
+		text-align: center;
+		margin: 20px auto;
+		background: rgba(33, 43, 33, 0.98);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: calc(100vh - 100px);  /* Subtracting the total margin (top + bottom) */
+	}
+	button {
+		font-family: 'Noto Sans TC', sans-serif;
+		padding: 10px 20px;
+		font-size: 1.68em;
+		margin: 5px;
+		border-radius: 8px;
+		background-color: rgb(79, 170, 226);
+		cursor: pointer;
+		color: whitesmoke;
+	}
+	button:hover{
+		background-color: rgb(197, 111, 33);
+		transform: translateY(-2px);
+	}
+	button:active {
+		background-color: rgb(197, 106, 32);
+		transform: translateY(1px);
+	}
+	.bgcdg{
+		background-color: rgb(74, 109, 90);
+		padding: 18px;
+		border-radius: 15px;
+		box-shadow: 1px 2px 4px ;
+	}
+	.margintop20{
+		margin-top: 20px;
+	}
+	.disflex{
+		display: flex;
+	}
+	.make-mid{
+		justify-content: center;
+	}
+	.make-left{
+		text-align: left;
+	}
+	.spacear{
+		justify-content: space-around;
+	}
+	.width60{width: 60%;}
+	.width40{width: 40%;}
+	.width90{width: 90%;}
+	.width80{width: 80%;}
+
+	.showpartiborder{
+		border: dotted 5px yellow;
+		min-height: 77vh;
+		height: auto;
+		padding: 1%;
+	}
+	.font1_5em{font-size: 1.5em;}
+	.font0_5em{font-size: 0.5em;}
+	.marginside5{
+		margin: 0 5%;
+	}
+	.changeline{
+		word-wrap: break-word;
+	}
+	.participants{
+		background-color: olivedrab;
+		color: aliceblue;
+		border: 1px white solid;
+		border-radius: 20px;
+		display: inline-block; /* 讓元素根據寬度來改變大小、且連續排放 */
+		padding: 8px 16px;
+		margin-right: 3%;
+		margin-bottom: 3%;
+	}
+	.disnone{
+		display: none;
+	}
+
+	/* 問題區*/
+	#question-main, #result-container{
+		text-align: center;
+		padding: 10px;
+		margin-top: 20px;
+		border-radius: 5px;
+		font-size: 1.5em;
+		margin: 0 5%;
+	}
+	#question, #gameStatus{
+		text-shadow: 2px 2px 4px #000000;
+	}
+	#options {
+		list-style-type: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;  /* Allows the options to wrap onto the next line */
+		justify-content: center;
+	}
+	.options-item {
+		flex: 0 0 calc(50% - 20px); /* Each item takes up 50% of the container's width, minus 20px for margins */
+		padding-bottom: calc(50% - 20px);  /* Make it a square */
+		position: relative;  /* Needed for the inner content to be absolutely positioned */
+		margin: 10px;  /* 10px margins on all sides */
+		box-sizing: border-box;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		font-size: 20px;
+		text-align: center;
+		transition: background-color 0.3s;
+		color: #102202;
+		background: linear-gradient(to bottom, #b8e994, #a9e57b);  /* From a lighter green to a slightly darker green */
+	}
+	input[type="radio"] {
+		display: none;
+	}
+
+	#timeProgressBarContainer {
+		width: 80%;
+		margin: 20px auto;
+		height: 20px;
+		background-color: #ccc;
+		border-radius: 10px;
+		overflow: hidden;
+	}
+
+	#timeProgressBar {
+		height: 100%;
+		width: 100%;
+		background-color: #73c0c0;
+		border-radius: 10px;
+		transition: width 1s linear;
+	}
+
+	#soundicon {
+		border-radius: 20%;
+		box-shadow: 3px 6px 6px rgba(0, 0, 0, 0.5);
+		cursor: pointer;
+		font-size: 38px;
+		position: absolute;
+  		right: 5%;
+	}
+	#soundicon:hover{
+		filter: hue-rotate(60deg) drop-shadow(0 0 10px pink) ; 
+	}
+	#trophy{
+		color: yellow; 
+		font-size: x-large;
+		text-shadow: 
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000; /* 黑色外框 */
+	}
+	
+
+
+</style>
+</head>
+<body>
+<!--首頁-->
+<div id="firstpage" class="disflex width90 textshadow">
+	<div class="width40 marginside5 changeline font1_5em">
+		<p class="zoomText">輸入網址 或 掃QRcode，加入遊戲室！</p>
+		<div id="roomLink"></div>
+		<div class="disflex make-mid">
+			<figure id="qrcode" class="margintop20"></figure>
+		</div>
+		<div class="bgcdg">
+			<figcaption id="leveltext" class="make-left">★ 鑑別度：高</figcaption>
+			<div class="button-container font0_5em">
+				<button onclick="chooseLevel(1)">鑑別度低</button>
+				<button onclick="chooseLevel(2)">鑑別度中</button>
+				<button onclick="chooseLevel(3)">鑑別度高</button>
+			</div>
+		</div>
+		<div class="bgcdg margintop20">
+			<figcaption id="qNumtext" class="make-left">★ 題目數：10題</figcaption>
+			<div class="button-container font0_5em">
+				<button onclick="chooseQuestionsNumber(3)">3題</button>
+				<button onclick="chooseQuestionsNumber(5)">5題</button>
+				<button onclick="chooseQuestionsNumber(10)">10題</button>
+			</div>
+		</div>
+		<div class="bgcdg margintop20">
+			<figcaption id="AnswerTimetext" class="make-left">★ 答題時間：10秒</figcaption>
+			<div class="button-container font0_5em">
+				<button onclick="chooseAnswerTime(5)">5秒</button>
+				<button onclick="chooseAnswerTime(7)">7秒</button>
+				<button onclick="chooseAnswerTime(10)">10秒</button>
+			</div>
+		</div>
+	</div>
+	<div class="width60">
+		<div class="disflex make-mid">
+			<button id="startGameButton" onclick="startGame()">開始遊戲</button>
+			<div>
+				<span id="soundicon" class="material-symbols-outlined" onclick="playordont()">
+					volume_off
+				</span>
+				<audio id="bgmm" preload="auto" autoplay>
+					<source src="littlefish.mp3" type="audio/mpeg">
+					Your browser does not support the audio tag.
+				</audio>
+			</div>
+		</div>
+		<div class="showpartiborder margintop20">
+			<div class="disflex spacear font1_5em">
+				<p >遊戲參與者：</p>
+				<p>已加入：<span id="participantsNum">＿</span> 人</p>
+			</div>
+			<div id="participants-container" class="font1_5em"></div>	
+		</div>
+	</div>
+</div>
+<!--遊戲問題展示區-->
+<div id="question-main" class="whiteword disnone">
+	<div id="gameStatus" class="zoomText"></div>
+	<div class="margintop20">
+		<span id="usernameDiv"></span>
+		<span id="score"></span>
+	</div>
+	<div id="question"></div>
+	<div class="margintop20">
+		<div id="columnChart_div" style="height: 40vh;"></div>
+	</div>
+	<div id="buttonNext" style="display: none;" class="margintop20">
+		<button onclick="sayOKtoNext()">下一題</button>
+	</div>
+	<ul id="options"></ul>
+	<div id="feedback"></div>
+</div>
+<!--分數與排名顯示區-->
+<div id="interimScoresDiv" class="result-container width80" style="display: none">
+	<div id="barChart_div"></div>
+</div>
+<!--進度條-->
+<div id="timeProgressBarContainer" style="display: none">
+	<div id="timeProgressBar"></div>
+</div>
+<span id="trophy" style="position: absolute; display: none;" class="material-symbols-outlined">emoji_events</span>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.1/dist/confetti.browser.min.js"></script>
+<script>
+	const socket = io();
+	let roomId;
+	let level = 3;
+	let AnswerTime_host = 10;
+	var audio = document.getElementById("bgmm");
+	audio.volume = 0;
+	// 將barChart以及內參數設為全域變數，以顯示改變動畫
+	let barChart, options, data, view, bbox;
+	createRoom();
+	// 遊戲室初始化
+	function createRoom() {
+		socket.emit('createRoom', (id) => {
+			console.log("Received id:", id);
+			roomId = id;  // Set the value of roomId
+			// 產生連結
+			const roomUrl = `${window.location.origin}/participant.html?room=${roomId}`;
+			if (roomUrl) {document.getElementById('roomLink').innerHTML = roomUrl;}
+			else {document.getElementById('roomLink').innerHTML = "遊戲室載入失敗，請重試";}
+			// 根據roomURL 產生QRcode
+			const qrcode = new QRCode(document.getElementById("qrcode"), {
+				text: roomUrl,
+				width: 168,
+				height: 168,
+				colorDark : "#000000",
+				colorLight : "#ffffff",
+				correctLevel : QRCode.CorrectLevel.H
+			});
+		});
+	}
+	// 當有使用者加入時，收到訊息
+	socket.on('participantJoined', (username, partiNum) => {
+		console.log(username,partiNum);
+		// 使用者加入時的處理&顯示
+		addParticipant(username);
+		// 人數顯示
+		document.getElementById("participantsNum").innerHTML = partiNum;
+	});
+	// 當有使用者退出時，收到訊息
+	socket.on('participantLeft', function(participantId, partiNum) {
+        console.log('Participant left: ' + participantId);
+		// 使用者退出時的處理
+		removeParticipant(participantId);
+		// 人數顯示更新
+		document.getElementById("participantsNum").innerHTML = partiNum;
+    });
+
+	// 當新使用者加入時的處理
+	function addParticipant(username) {
+		const pContainer = document.getElementById("participants-container");
+		const div = document.createElement("div");
+		div.className = "participants animate__animated animate__pulse";
+		div.textContent = username;
+		div.id = "participant-" + username;  // 使用用户名作為ID
+		pContainer.appendChild(div);
+	};
+	// 使用者退出時的處理
+	function removeParticipant(username) {
+		const participantDiv = document.getElementById("participant-" + username);
+		if (participantDiv) {
+			participantDiv.parentNode.removeChild(participantDiv);
+		}
+	}
+	// 當選擇鑑別度 按鈕時的處理
+	function chooseLevel(level) {
+		let text = '';
+		if(level == 1){text='低'}else if(level == 2){text='中'}else if(level == 3){text='高'}
+		document.getElementById("leveltext").innerHTML = `★ 鑑別度：${text}`
+		socket.emit('chooseLevel', roomId, level); // 通知server改變不同鑑別度的題目
+		console.log("level:",level);
+	}
+	// 當選擇題目數 按鈕的處理
+	function chooseQuestionsNumber(qNum){
+		let text = '';
+		if(qNum == 3){text='3題'}else if(qNum == 5){text='5題'}else if(qNum == 10){text='10題'}
+		document.getElementById("qNumtext").innerHTML = `★ 題目數：${text}`
+		socket.emit('chooseQuestionsNum', roomId, qNum); // 通知server改變不同題目數
+		console.log("qNum:",qNum);
+	}
+	// 當選擇答題時間 按鈕的處理
+	function chooseAnswerTime(time){
+		let text = '';
+		if(time == 5){text='5秒'}else if(time == 7){text='7秒'}else if(time == 10){text='10秒'}
+		AnswerTime_host = time;
+		document.getElementById("AnswerTimetext").innerHTML = `★ 答題時間：${text}`
+		socket.emit('chooseAnswerTime', roomId, time); // 通知server改變不同答題時間
+		console.log("AnswerTime:",AnswerTime_host);
+	}
+
+
+	// 當按下開始遊戲按鈕時的處理
+	function startGame() {
+		socket.emit('startGame', roomId); // Notify server to start the game for this room
+		document.getElementById("firstpage").style.display = 'none';
+		document.getElementById("question-main").style.display = 'block';
+	}
+
+	/*～～～問題區～～～*/
+	// 遊戲開始倒計時
+	socket.on('countdown', (time) => {
+		const gameStatus = document.getElementById('gameStatus');
+		gameStatus.innerText = `準備好囉，遊戲將在 ${time} 秒後開始...`;
+		fadeOut();
+	});
+
+	// 倒數計時&進度條的處理 (統一從server端傳來)
+	socket.on('timeUpdate', (timeleft) => {
+		const gameStatus = document.getElementById('gameStatus');
+		gameStatus.innerText = `${timeleft} 秒`;
+		let progressBar = document.getElementById('timeProgressBar');
+		let containerBar = document.getElementById('timeProgressBarContainer');
+		// 計算進度條
+		if (timeleft > 0){
+			let progress = (timeleft / AnswerTime_host) * 100;
+			console.log(progress);
+			containerBar.style.display = 'block';
+			progressBar.style.width = progress + '%';
+		} else{
+			containerBar.style.display = 'none';
+			progressBar.style.width = '100%';
+			gameStatus.innerText = '';
+			// 顯示 下一題的按鈕
+			document.getElementById("buttonNext").style.display = 'block';
+		}
+	});
+	
+	socket.on('question', displayQuestionForAll);
+	// 在老師端 顯示問題的處理
+	function displayQuestionForAll(q) {
+	const optionsList = document.getElementById('options');
+	const fragment = document.createDocumentFragment();
+
+	document.getElementById('feedback').innerText = ' ';
+	optionsList.style.display = 'flex'; // Ensure that the ul has a flex display
+	
+	document.getElementById('question').innerText = q.question;
+	q.options.forEach((option, index) => {
+		const uniqueId = `option_${index}`;
+		const li = document.createElement('li');
+		li.classList.add('options-item');
+
+		const label = document.createElement('label');
+		label.style.display = "block"; // Make the label a block element
+
+		const input = document.createElement('input');
+		input.type = 'radio';
+		input.name = 'option';
+		input.value = option;
+		input.id = uniqueId; // Assign the unique ID to the input for label association
+
+		label.setAttribute('for', uniqueId); // Associate the label with the input using the 'for' attribute
+		label.appendChild(input);
+		label.appendChild(document.createTextNode(index+1 + '. ' + option));
+		li.appendChild(label);
+		fragment.appendChild(li);
+		});
+	optionsList.innerHTML = '';
+	optionsList.appendChild(fragment);
+	}
+
+	// 柱狀圖統計 (從server收到所有答案 於host端顯示柱狀圖的處理)
+	socket.on('allAnswers', showAllUserResult);
+	function showAllUserResult(Questions, AllUsersAnswers) {
+		// 計算出現次數
+		let counts = Questions.map(question => {
+			let count = 0;
+			for (let key in AllUsersAnswers) {
+				if (AllUsersAnswers[key] === question) {
+				count++;
+				}
+			}
+			return count;
+		});
+		// 加載 Google Charts
+		google.charts.load('current', {'packages':['corechart']});
+		// 當加載完成後繪製圖表
+		google.charts.setOnLoadCallback(drawColumnChart);
+		function drawColumnChart() {
+			var data = google.visualization.arrayToDataTable([
+				['Question', '人數'],
+				...Questions.map((question, index) => ['' + (index + 1), counts[index]])
+			]);
+			// 計算最大值以設置軸上的間隔
+			var maxValue = Math.max(...counts);
+			var options = {
+				title: '答題分布',
+				chartArea: {width: '70%'},
+				backgroundColor: {
+					fill: '#e0fff0',
+					fillOpacity: 0.7
+				}, 
+				colors: ['#4CAF50', '#FF9800', '#F44336', '#2196F3'], // 自定義柱子顏色
+				hAxis: {
+					title: '選項',
+					ticks: [1, 2, 3, 4] // 橫軸標籤設為 1 到 4
+				},
+				vAxis: {
+					title: '人數',
+					minValue: 0, 
+					ticks: Array.from({ length: maxValue + 1 }, (_, i) => i)
+				},
+				animation: {
+					duration: 1000,
+					easing: 'out',
+					startup: true
+				}
+			};
+
+			var columnChart= new google.visualization.ColumnChart(document.getElementById('columnChart_div'));
+			columnChart.draw(data, options);
+			}
+			window.addEventListener('resize', drawColumnChart);
+		}
+	socket.on('feedback', (message) => {
+		document.getElementById('feedback').innerText = message;
+	});
+	// 顯示柱狀圖後 下一題的按鈕處理
+	function sayOKtoNext(){
+		// 刪除圖表、隱藏按鈕
+		document.getElementById("columnChart_div").innerHTML = '';
+		document.getElementById("buttonNext").style.display = 'none';
+		socket.emit('oknext', roomId);
+	}
+
+	// 接收server端的顯示分數通知 (傳來的所有使用者姓名&分數)
+	socket.on('displayInterimScores', (scores) => {
+		displayScoresOnUI(scores);
+	});
+
+	let isbarChartInitialized = false;
+	// 顯示分數通知的處理 (每道題目結束後都會顯示)
+	function displayScoresOnUI(scores) {
+		// 隱藏問題區、顯示分數區
+		document.getElementById('question-main').style.display = 'none';
+		document.getElementById('interimScoresDiv').style.display = 'block';
+		// 根據分數高低排序
+		let sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+		let top7Scores = sortedScores.slice(0, 7);
+		// 長條圖 用來顯示所有人目前得分
+		// 若未初始化，則先初始化圖表 先設定好圖表框架 之後只需要更新分數與圖表上的內容即可
+		if (!isbarChartInitialized) {
+			initChart();
+			isbarChartInitialized = true;
+    	}
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawBarChart);
+		// 螢幕大小改變 圖形跟著變
+		window.addEventListener('resize', updateChart);
+
+		function drawBarChart() {
+			setTimeout(updateChart, 300); ; // 延遲更新或重新渲染圖表
+		}
+		function initChart() {
+			data = new google.visualization.DataTable();
+			// 處理column
+			data.addColumn('string', 'Name');
+			data.addColumn('number', 'Score');
+			// 圖表設定
+			options = {
+				title: '目前所有玩家分數',
+				chartArea: {width: '70%'},
+				backgroundColor: {
+					fill: '#bbddcc',
+					fillOpacity: 0
+				}, 
+				titleTextStyle: {
+					fontSize: 26, // 調整左上角標題文字大小
+					color: 'white' // 可選，調整文字顏色
+				},
+				hAxis: {
+					titleTextStyle: {color: '#555'},
+					gridlines: {color: 'transparent'}, // 隱藏 X 軸的格線
+					textPosition: 'none' // 隱藏 X 軸的數值
+				},
+				vAxis: {
+					minValue: 0,
+					textStyle: {color: '#fff', fontSize: 22, bold: true},
+				},
+				legend: { position: "none" }, //隱藏圖例
+				isStacked: true,
+				annotations: {  // 圖上的標籤
+					textStyle: {
+						fontSize: 24,
+						color: 'white',
+						bold: true
+					},
+				},    
+				animation:{
+					duration: 1200, // 動畫持續時間，這裡設置為 1000 毫秒（1 秒）
+					easing: 'out',  // 動畫效果，'out' 表示緩慢結束
+				}
+			};
+			view = updateDataScore();
+			// 動態調整圖表高度
+			let dynamicHeight = Math.max(view.getNumberOfRows() * 40, 500); 
+    		options.height = dynamicHeight;
+
+			barChart = new google.visualization.BarChart(document.getElementById('barChart_div'));
+			barChart.draw(view, options);
+
+			// 獲取 Y軸第一標籤位置(放獎盃用)
+			google.visualization.events.addListener(barChart, 'ready', function () {
+			var layout = barChart.getChartLayoutInterface();
+			bbox = layout.getBoundingBox('vAxis#0#label#0');
+		});
+    	}
+		// 重新繪圖(用原圖去改 才有動畫效果)
+		function updateChart(){
+			// 清除先前的數據並添加新數據
+			data.removeRows(0, data.getNumberOfRows());
+			view = updateDataScore();
+			// 使用現有圖表實例重新繪製圖表
+			barChart.draw(view, options);
+		}
+		// 更新分數(繪製圖表的data)
+		function updateDataScore(){
+			// 更新 圖上的前7名
+			top7Scores.forEach(entry => data.addRow([entry[0], entry[1]]));
+			// 圖表上添加標籤的處理
+			let viewtemp = new google.visualization.DataView(data);
+			viewtemp.setColumns([0, 1,
+				{
+					calc: "stringify",
+					sourceColumn: 1,
+					type: "string",
+					role: "annotation"
+				}]);
+			return viewtemp;
+    	}
+	}
+	// 復原為了顯示分數區 而隱藏的問題區
+	socket.on('hideInterimScores', () => {
+		document.getElementById('interimScoresDiv').style.display = 'none';
+		document.getElementById('question-main').style.display = 'block';
+	});
+
+	// 當遊戲結束時，收到分數訊息
+	socket.on('finalScores', (scores) => {
+		// Display the scores for each student
+		let highestScore = -1; // 找分數最大值用的
+		let highestScorer = '';
+		let scoreList = "最終分數:\n";
+		for (let student in scores) {
+			scoreList += `${student}: ${scores[student]} 分\n`;
+			if (scores[student] > highestScore) {
+				highestScore = scores[student];
+				highestScorer = student;
+			}
+		}
+		// 在第一名的姓名旁邊 加上小獎盃
+		putTrophy();
+		// 灑花特效
+		var duration = 10 * 1000;
+		var end = Date.now() + duration;
+		(function frame() {
+			// launch a few confetti from the left edge
+			confetti({
+				particleCount: 7,
+				angle: 60,
+				spread: 80,
+				origin: { x: 0.05 }
+			});
+			// and launch a few from the right edge
+			confetti({
+				particleCount: 7,
+				angle: 120,
+				spread: 80,
+				origin: { x: 0.95 }
+			});
+
+			// keep going until we are out of time
+			if (Date.now() < end) {
+				requestAnimationFrame(frame);
+			}
+		}());
+		// 文字提示
+		scoreList += `恭喜${highestScorer} 獲得了第一名！｡:.ﾟヽ(*´∀ˋ)ﾉﾟ.:｡`;
+		alert(scoreList);
+		socket.off('finalScores');
+	});
+	function putTrophy(){
+		// 獎盃位置獲取
+		var trophy = document.getElementById('trophy');
+		var chartContainer = document.getElementById('interimScoresDiv');
+		// 計算並更新 span 元素的位置
+		var leftPosition = chartContainer.offsetLeft + bbox.left - trophy.offsetWidth - 20;
+    	var topPosition = chartContainer.offsetTop + bbox.top - 5;
+		trophy.style.left = leftPosition + 'px';
+		trophy.style.top = topPosition + 'px';
+		trophy.style.display = 'block';
+	}
+
+	// 音效漸弱與漸強
+	function fadeOut() {
+        var fadeOutInterval = setInterval(function() {
+			audio = document.getElementById("bgmm");
+            if (audio.volume > 0.1) {
+                audio.volume -= 0.1;
+            } else {
+                audio.volume = 0;
+                clearInterval(fadeOutInterval);
+            }
+        }, 10); // 調整漸弱的速度
+    }
+    function fadeIn() {
+        var fadeInInterval = setInterval(function() {
+			audio = document.getElementById("bgmm");
+            if (audio.volume < 0.9) {
+                audio.volume += 0.1;
+            } else {
+                audio.volume = 1;
+                clearInterval(fadeInInterval);
+            }
+        }, 10); // 調整漸強的速度
+    }
+	// 點擊音效按鈕的處理
+	var isplay = false;
+	function playordont(){
+		soundicon = document.getElementById("soundicon");
+		if(isplay){
+			fadeOut();
+			soundicon.innerHTML = 'volume_off';
+			console.log("set volume to 0");
+			isplay = false
+		}else{
+			audio.play();
+			fadeIn();
+			soundicon.innerHTML = 'volume_up';
+			console.log("set volume to 1");
+			isplay = true;
+		}
+	}
+</script>
+</body>
+</html>

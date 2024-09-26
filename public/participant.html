@@ -1,0 +1,418 @@
+<!-- participant.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自製kahoot - 玩家端</title>
+<!--google字型-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+<script src="/socket.io/socket.io.js"></script>
+<style>
+	/* 呼吸動畫 */
+	@keyframes zoomInOut {
+		0%, 100% {
+			transform: scale(1);  /* 原始大小 */
+		}
+		50% {
+			transform: scale(1.1);  /* 放大到1.1倍 */
+		}
+	}
+	/* 應用動畫到目標元素 */
+	.zoomText {
+		animation: zoomInOut 3s infinite;  /* 動畫名稱, 動畫時間, 循環次數 */
+	}
+	.modal {
+		display: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.7);
+		z-index: 1000;
+	}
+	.modal-content {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: #fff;
+		padding: 20px;
+		width: 80%;
+		max-width: 400px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		border-radius: 8px;
+	}
+	.modal-content input[type="text"] {
+		width: 100%;
+		padding: 10px;
+		margin: 10px -10px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		font-size: 16px;
+	}
+	.modal-footer {
+		text-align: right;
+		padding-top: 10px;
+	}
+
+	.modal-footer button {
+		padding: 10px 20px;
+		background-color: #007BFF;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.modal-footer button:hover {
+		background-color: #0056b3;
+	}
+	body {
+		font-family: 'Noto Sans TC', sans-serif;
+		background-color: rgba(30, 50, 30);
+		margin: 0 10%;
+		padding: 0;
+	}
+	.whiteword{
+		color: #eee;
+	}
+	.question-main{
+		text-align: center;
+		margin-top: 20px;
+	}
+	#options {
+		list-style-type: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;  /* Allows the options to wrap onto the next line */
+		justify-content: center;
+	}
+
+	.options-item {
+		flex: 0 0 calc(50% - 20px); /* Each item takes up 50% of the container's width, minus 20px for margins */
+		padding-bottom: calc(50% - 20px);  /* Make it a square */
+		position: relative;  /* Needed for the inner content to be absolutely positioned */
+		margin: 10px;  /* 10px margins on all sides */
+		box-sizing: border-box;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		font-size: 20px;
+		text-align: center;
+		cursor: pointer;
+		transition: background-color 0.3s;
+		color: #102202;
+		background: linear-gradient(to bottom, #b8e994, #a9e57b);  /* From a lighter green to a slightly darker green */
+	}
+	.options-item:hover {
+		background: linear-gradient(to bottom, #6a9947, #639e33); /* Darken the gradient slightly on hover */
+	}
+	.options-item.selected {
+		pointer-events: none;
+		background: linear-gradient(to bottom, #6a9947, #639e33); /* Darken the gradient slightly on hover */
+	}
+	.options-item.disabled {
+		pointer-events: none;
+		opacity: 0.6; /* Optional: Make the disabled options slightly transparent */
+	}
+	input[type="radio"] {
+		display: none;
+	}
+	.table-container {
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		height: 100%; 
+		width: 100%;
+		padding-top: 50px; 
+	}
+	table {
+		border-collapse: collapse;
+		margin: 10px auto;
+		width: 100%;
+		box-sizing: content-box;  /* 確保 width: 100% 只包括 content area */
+		background-color: #ffffff;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		border-radius: 8px;
+		font-size: 20px;
+	}
+	th, td {
+		border: 1px solid #e0e0e0;
+		padding: 10px 15px;
+		text-align: center;
+	}
+	th {
+		background-color: #56b8fa;
+		font-size: 20px; /* Increased font size for headers */
+	}
+	th:nth-child(1), td:nth-child(1) {
+		width: 40%;
+	}
+
+	th:nth-child(2), td:nth-child(2) {
+		width: 60%;
+	}
+	#timeProgressBarContainer {
+		width: 80%;
+		margin: 20px auto;
+		height: 20px;
+		background-color: #ccc;
+		border-radius: 10px;
+		overflow: hidden;
+	}
+
+	#timeProgressBar {
+		height: 100%;
+		width: 100%;
+		background-color: #73c0c0;
+		border-radius: 10px;
+		transition: width 1s linear;
+	}
+
+	.margintop20{
+		margin-top: 20px;
+	}
+	.margintopdown20{
+		margin: 20px 0;
+	}
+	.font1_4em{
+		font-size: 1.4em;
+	}
+</style>
+</head>
+<body>
+	<!--姓名輸入區-->
+	<div id="usernameModal" class="modal">
+		<div class="modal-content">
+			<h4>請輸入您的大名</h4>
+			<input type="text" id="usernameInput" placeholder="在這裡輸入您的名字">
+			<div class="modal-footer">
+				<button onclick="submitUsername()">進入遊戲室！</button>
+			</div>
+		</div>
+	</div>
+	<!--問題與回答區-->
+    <div id="question-container" class="question-main whiteword">
+		<div id="gameStatus" class="zoomText"></div>
+		<div id="hint" class="margintopdown20"></div>
+		<div id="question" class="font1_4em"></div>
+		<ul id="options"></ul>
+		<div id="feedback"></div>
+		<div id="userNameandScore" class="margintop20">
+			<span id="username"></span>
+			<span id="score"></span>
+		</div>
+	</div>
+	<!--分數顯示區-->
+	<div id="interimScoresDiv" class="table-container" style="display: none">
+		<table id="interimScores" style="width: 100%; margin-top: 20px;">
+			<thead>
+				<tr>
+					<th>玩家名稱</th>
+					<th>目前得分</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	<div id="timeProgressBarContainer" style="display: none">
+		<div id="timeProgressBar"></div>
+	</div>
+
+<script>
+	const socket = io();
+	const urlParams = new URLSearchParams(window.location.search);
+	const roomId = urlParams.get('room');
+	let username = "";
+	let selectedOption = "";
+	let score = 0;
+	let AnswerTime_Parti = 10;
+
+	const modal = document.getElementById('usernameModal');
+	modal.style.display = 'block';
+
+	function submitUsername() {
+		const usernameInput = document.getElementById('usernameInput');
+		username = usernameInput.value.trim();
+		// 確認有先輸入了名字
+		if (username === "") {
+			alert("請先留下您的大名，才能加入遊戲喔");
+		} else{
+			joinRoom();  // Automatically join the room after entering the name
+		}
+	}
+	
+	function joinRoom() {
+		socket.emit('joinRoom', roomId, username, (response) => {
+			if (response.success) {
+				modal.style.display = 'none';
+				document.getElementById('gameStatus').innerText = '請等待遊戲室房主 開始遊戲...';
+				document.getElementById('username').innerText = username;
+				document.getElementById('score').innerText = '歡迎加入遊戲室';
+			} else {
+				alert(response.message);
+			}
+		});
+	}
+	// 單純接收答題時間(單純為了顯示進度條用的)
+	socket.on('sendAnswerTimetoparti', (AnswerTime) => {
+		AnswerTime_Parti = AnswerTime;
+	});
+	// 遊戲開始倒計時(順便傳AnswerTime參數來)
+	socket.on('countdown', (time) => {
+		const gameStatus = document.getElementById('gameStatus');
+		gameStatus.innerText = `準備好囉，遊戲將在 ${time} 秒後開始...`;
+		document.getElementById('userNameandScore').style.display = 'none';
+		document.getElementById('username').innerText = `${username} `;
+		document.getElementById('score').innerText = '得分：0';
+	});
+	// 更新倒數計時時間與進度條 (統一從server端傳來)
+	socket.on('timeUpdate', (timeleft) => {
+		const gameStatus = document.getElementById('gameStatus');
+		gameStatus.innerText = `${timeleft}秒`;
+		let progressBar = document.getElementById('timeProgressBar');
+		let containerBar = document.getElementById('timeProgressBarContainer');
+		// 計算進度條
+		if (timeleft > 0){
+			let progress = (timeleft / AnswerTime_Parti) * 100;
+			containerBar.style.display = 'block';
+			progressBar.style.width = progress + '%';
+		} else{
+			containerBar.style.display = 'none';
+			progressBar.style.width = '100%';
+			gameStatus.innerText = '';
+		}
+	});
+
+	socket.on('question', displayQuestion);
+	// 顯示問題題目的處理
+	function displayQuestion(q) {
+	const optionsList = document.getElementById('options');
+	const fragment = document.createDocumentFragment();
+
+	document.getElementById("hint").innerText = '';
+	document.getElementById('userNameandScore').style.display = 'block';
+	document.getElementById('feedback').innerText = ' ';
+	optionsList.style.display = 'flex'; // Ensure that the ul has a flex display
+	
+	document.getElementById('question').innerText = q.question;
+	q.options.forEach((option, index) => {
+		const uniqueId = `option_${index}`;
+		const li = document.createElement('li');
+		li.classList.add('options-item');
+
+		const label = document.createElement('label');
+		label.style.display = "block"; // Make the label a block element
+
+		const input = document.createElement('input');
+		input.type = 'radio';
+		input.name = 'option';
+		input.value = option;
+		input.id = uniqueId; // Assign the unique ID to the input for label association
+		input.onclick = () => handleOptionClick(option);
+
+		label.setAttribute('for', uniqueId); // Associate the label with the input using the 'for' attribute
+		label.appendChild(input);
+		label.appendChild(document.createTextNode(option));
+		li.appendChild(label);
+		fragment.appendChild(li);
+		});
+		optionsList.innerHTML = '';
+		optionsList.appendChild(fragment);
+	}
+	// 問題點擊後的處理
+	function handleOptionClick(option) {
+		selectedOption = option;
+		submitAnswer();
+		document.getElementById("hint").innerText = '請稍等所有人答題後，顯示分數統計';
+		// 對使用者所選答案套用高亮，其餘則鎖定&套用淡化
+		const options = document.querySelectorAll("#options .options-item");
+		options.forEach(opt => {
+			const input = opt.querySelector("input[name='option']");
+			if (input.value === option) {
+				opt.classList.add('selected');
+			} else {
+				opt.classList.add('disabled');
+			}
+		});
+	}
+	function submitAnswer() {
+		socket.emit('answer', { user: username, answer: selectedOption, roomId: roomId });
+	}
+	socket.on('feedback', (message) => {
+		document.getElementById('feedback').innerText = message;
+	});
+	socket.on('correct', (data) => {
+		score = data.score ; // Server端處理加分規則(預設一題20分，剩餘秒數1秒1分)
+		document.getElementById('score').innerText = `得分： ${score}`;  // 更新分數顯示
+	});
+
+	// 當答題的倒數計時結束後，停止使用者作答
+	socket.on('stopAnswer', stopAnswer);
+	function stopAnswer() {
+		const options = document.querySelectorAll("#options .options-item");
+		options.forEach(opt => {
+			if (opt.classList.contains('selected')){}
+			else {
+				opt.classList.add('disabled');
+			}
+		});
+	}
+
+	socket.on('displayInterimScores', (scores) => {
+		displayScoresOnUI(scores);
+	});
+	// 暫時顯示分數與排名
+	function displayScoresOnUI(scores) {
+		// 隱藏問題區、顯示分數區
+		document.getElementById('question-container').style.display = 'none';
+		document.getElementById('interimScoresDiv').style.display = 'block';
+		
+		const tbody = document.getElementById('interimScores').querySelector('tbody');
+		tbody.innerHTML = ''; // Clear existing rows
+		// 根據分數高低排名
+		const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+		for (let [player, score] of sortedScores) {
+			const tr = document.createElement('tr');
+			const tdPlayer = document.createElement('td');
+			tdPlayer.innerText = player;
+			const tdScore = document.createElement('td');
+			tdScore.innerText = `${scores[player]} 分`;
+			tr.appendChild(tdPlayer);
+			tr.appendChild(tdScore);
+			tbody.appendChild(tr);
+		}
+	}
+	// 復原為了顯示分數區 而隱藏的問題區
+	socket.on('hideInterimScores', () => {
+		document.getElementById('interimScoresDiv').style.display = 'none';
+		document.getElementById('question-container').style.display = 'block';
+	});
+
+	// 當遊戲結束時，收到分數訊息
+	socket.on('finalScores', (scores) => {
+		// Display the scores for each student
+		let highestScore = -1; // 找分數最大值用的
+		let highestScorer = '';
+		let scoreList = "最終分數:\n";
+		for (let student in scores) {
+			scoreList += `${student}: ${scores[student]} 分\n`;
+			if (scores[student] > highestScore) {
+				highestScore = scores[student];
+				highestScorer = student;
+			}
+		}
+		scoreList += `恭喜${highestScorer} 獲得了第一名！｡:.ﾟヽ(*´∀ˋ)ﾉﾟ.:｡`;
+		alert(scoreList);
+		socket.off('finalScores');
+	});
+</script>
+</body>
+</html>

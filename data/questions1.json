@@ -1,0 +1,52 @@
+[
+    { 
+      "question": "請問「Ira ku varu i uma’umahan.」的中文是？",
+      "options": ["野地裡有花。", "學校裡有樹。", "公園裡有花。", "溪裡有石頭。"],
+      "answer": "野地裡有花。" 
+    },  
+    { 
+     "question": "請問「Hay, ina.」的中文是？",
+      "options": ["不好，媽媽。", "好的，老師。", "好的，媽媽。", "好的，爸爸。"],
+      "answer": "好的，媽媽。" 
+    },
+    { 
+      "question": "請問「Kapah ku remi’ad anini.」的中文是？",
+      "options": ["今天是好天氣。", "昨天是好天氣。", "今天是壞天氣。", "今天是好日子。"],
+      "answer": "今天是好天氣。" 
+    },
+    { 
+      "question": "請問「Micudad kaku i cacudadan.」的中文是？",
+      "options": ["我在圖書館讀書。", "他在家裡讀書。", "我在學校讀書。", "你在學校吃飯。"],
+      "answer": "我在圖書館讀書。" 
+    },
+    { 
+      "question": "請問「Lalima ku tamedaw nu luma’ nu niyam.」的中文是？",
+      "options": ["我們家有四個房間。", "我們家有五個人。", "我們家有兩台車。", "我們家有三隻貓。"],
+      "answer": "我們家有五個人。" 
+    },
+    { 
+      "question": "請問「Taluma’tu ci ama aci ina.」的中文是？",
+      "options": ["哥哥和姊姊出門了。", "爸爸和媽媽回家了。", "弟弟和妹妹上學了。", "我和姐姐去了公園。"],
+      "answer": "爸爸和媽媽回家了。" 
+    },
+    { 
+      "question": "請問「U tatala Tavalung kaku anucila.」的中文是？",
+      "options": ["明天我要去高雄。", "我明天要去台北。", "明天我要去太巴塱。", "我昨天去了太巴塱。"],
+      "answer": "明天我要去太巴塱。" 
+    },
+    { 
+      "question": "請問「Tatusa ku kaka nu maku tu vava’inayan, cacay ku sava tu vavahiyan.」的中文是？",
+      "options": ["我有兩個弟弟和一個妹妹。", "我有三個哥哥和一個妹妹。", "我有兩個哥哥和一個妹妹。", "我有兩個哥哥和兩個妹妹。"],
+      "answer": "我有兩個哥哥和一個妹妹。" 
+    },
+    { 
+      "question": "請問「Rakaten nu maku a tala cacudadan tu remiremi’ad.」的中文是？",
+      "options": ["我每天搭公車去學校。", "我每天騎腳踏車去學校。", "我每天搭捷運去學校。", "我每天走路去學校。"],
+      "answer": "我每天走路去學校。" 
+    },
+    { 
+      "question": "請問「Enemtu ku miheca’an nu vavahiyan a sava nu maku.」的中文是？",
+      "options": ["我家的小狗三歲了。", "我的弟弟七歲了。", "我的妹妹六歲了。", "我的哥哥九歲了。"],
+      "answer": "我的妹妹六歲了。" 
+    }
+]

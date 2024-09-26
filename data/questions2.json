@@ -1,0 +1,52 @@
+[
+    { 
+      "question": "請問「Muketeptu ku miheca’an nu maku.」的中文是？",
+      "options": ["我今年十歲了。", "我明年十五歲。", "我今年十五歲了。", "我明年十歲。"],
+      "answer": "我今年十歲了。" 
+    },  
+    { 
+     "question": "請問「I ngata haw nu cacudadan ku luma’ nu namu?」的中文是？",
+      "options": ["你們的家在公園附近嗎？", "你們的家在湖泊旁邊嗎？", "你們的家在超市旁邊嗎？", "你們的家在學校附近嗎？"],
+      "answer": "你們的家在學校附近嗎？" 
+    },
+    { 
+      "question": "請問「Salipahak sa’an ku heni i kasivaliyan.」的中文是？",
+      "options": ["冬天來臨時他們很喜悅。", "風吹來時他們很高興。", "太陽升起時他們很開心。", "雨停下來時他們很興奮。"],
+      "answer": "風吹來時他們很高興。" 
+    },
+    { 
+      "question": "請問「U vuhecalay ku kulit nu calamay i kakarayan.」的中文是？",
+      "options": ["海裡的魚是多種顏色的。", "夜空中的星星是閃亮的。", "地上的草是綠色的。", "天上的雲是白色的。"],
+      "answer": "天上的雲是白色的。" 
+    },
+    { 
+      "question": "請問「Lalima ku tamedaw nu luma’ nu niyam.」的中文是？",
+      "options": ["我們家有四個房間。", "我們家有五個人。", "我們家有兩台車。", "我們家有三隻貓。"],
+      "answer": "我們家有五個人。" 
+    },
+    { 
+      "question": "請問「Taluma’tu ci ama aci ina.」的中文是？",
+      "options": ["哥哥和姊姊出門了。", "爸爸和媽媽回家了。", "弟弟和妹妹上學了。", "我和姐姐去了公園。"],
+      "answer": "爸爸和媽媽回家了。" 
+    },
+    { 
+      "question": "請問「U tatala Tavalung kaku anucila.」的中文是？",
+      "options": ["明天我要去高雄。", "我明天要去台北。", "明天我要去太巴塱。", "我昨天去了太巴塱。"],
+      "answer": "明天我要去太巴塱。" 
+    },
+    { 
+      "question": "請問「Mihulul kaku atu vavahiyan a kaka nu maku i luma’.」的中文是？",
+      "options": ["我和姊姊在餐廳裡吃晚餐。", "姊姊和我在學校裡上課。", "姊姊和我在家裡玩。", "我和姊姊一起去公園散步。"],
+      "answer": "姊姊和我在家裡玩。" 
+    },
+    { 
+      "question": "請問「Rakaten nu maku a tala cacudadan tu remiremi’ad.」的中文是？",
+      "options": ["我每天搭公車去學校。", "我每天騎腳踏車去學校。", "我每天搭捷運去學校。", "我每天走路去學校。"],
+      "answer": "我每天走路去學校。" 
+    },
+    { 
+      "question": "請問「Enemtu ku miheca’an nu vavahiyan a sava nu maku.」的中文是？",
+      "options": ["我家的小狗三歲了。", "我的弟弟六歲了。", "我的妹妹六歲了。", "我的哥哥九歲了。"],
+      "answer": "我的妹妹六歲了。" 
+    }
+]
